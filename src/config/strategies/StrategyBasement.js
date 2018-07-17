@@ -1,7 +1,7 @@
 import { List, Map } from 'immutable';
 import h from './Helpers';
 
-class Strategy {
+export class Strategy {
     constructor(workersSheet, tasksSheet, jobs) {
         this.workersSheet = List.of(...workersSheet);
         this.workers = List.of(...workersSheet).toJS();

@@ -10,6 +10,9 @@ import store from "./rdx/index";
 import { addToDoItem, updateToDoItem, deleteToDoItem } from "./rdx/actions/index";
 
 import { ListItemComp } from "./components/ListComponent";
+import { SlideContainer } from "./components/SlideContainer";
+
+import { ModelUnit } from "./config/ModelUnit";
 
 // Using CSS Modules mechanism
 import styles from "./assets/css/style.css";
@@ -22,10 +25,17 @@ class App extends Component {
     this.state = {
       bShow: false
     };
+    this.onDrag = this.onDrag.bind(this);
+    this.modelUnitObj = new ModelUnit();
+    console.warn(ModelUnit.getStrategiesList());
   }
 
   showSettings() {
     this.setState({bShow: !this.state.bShow });
+  }
+  
+  onDrag(e){
+      console.log(e);
   }
 
   onAdd() {
@@ -90,21 +100,21 @@ class App extends Component {
     return (
       <div className={styles.bpApp}>
         <div>
-          <img src={logo} height="64px" />
-          <h1>ToDux</h1>
+          <h1>Workgroup process imitation system </h1>
         </div>
         <Well>
           <Label bsStyle="primary"> Items left : {this.props.ToDoData.length>this.props.done?this.props.ToDoData.length-this.props.done:0}</Label>{"  "}
           <Label bsStyle="success"> Items done : {this.props.done}</Label>{"  "}
           <Label bsStyle="info"> Total : {this.props.ToDoData.length}</Label>{"  "}
           <Label bsStyle="danger"> Archieved Items :  {this.props.archived}</Label>{"  "}
+          <SlideContainer onDrag={this.onDrag}/>
         </Well>
         <hr></hr>
         <div>
-          <div class="input-group">
-            <input ref="newToDoItem" type="text" class="form-control" placeholder="To Do Item ..."></input>
-            <span class="input-group-btn">
-              <button class="btn btn-primary" type="button" onClick={this.onAdd.bind(this)}> Add </button>
+          <div className="input-group">
+            <input ref="newToDoItem" type="text" className="form-control" placeholder="To Do Item ..."></input>
+            <span className="input-group-btn">
+              <button className="btn btn-primary" type="button" onClick={this.onAdd.bind(this)}> Add </button>
             </span>
           </div>
         </div>

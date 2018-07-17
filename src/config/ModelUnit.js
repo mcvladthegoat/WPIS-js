@@ -10,6 +10,10 @@ export class ModelUnit {
         this.results;
     }
 
+    static getStrategiesList() {
+        return availableStrategies;
+    }
+
     static validateData(customRules = undefined) {
         return true;
     }
