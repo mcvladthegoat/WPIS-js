@@ -8,7 +8,6 @@ class NormalStrategy extends Strategy {
         this.calc = this.calc.bind(this);
         this.start = this.start.bind(this);
         this.name = name;
-        // this.localResults = [];
     }
 
     calc() {
@@ -17,7 +16,6 @@ class NormalStrategy extends Strategy {
          * Find the absolute minimum distance btwn worker level and task time
          * and jobIds are equal
          */
-        // console.log('bbb');
        this.tasks.filter(t => !t.status).map(task => {
             let candidates = [];
             this.freeWorkers.map(fw => {
@@ -26,7 +24,6 @@ class NormalStrategy extends Strategy {
                 }
             });
             candidates.sort((a, b) => b.dist - a.dist);
-            // console.log('cand', candidates);
             if(candidates[0]) {
                 this.workers.push({workerId: candidates[0].workerId, taskId: task.taskId, time: 0});
                 let index = this.freeWorkers.findIndex(a => a.workerId === candidates[0].workerId);
