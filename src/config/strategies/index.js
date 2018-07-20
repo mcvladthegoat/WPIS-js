@@ -4,6 +4,6 @@ import StandartStrategy from "./Standart";
 
 export default [
     NormalStrategy,
-    ReliableStrategy,
+    // ReliableStrategy,
     // StandartStrategy
 ];

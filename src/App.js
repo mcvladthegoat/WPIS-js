@@ -82,7 +82,7 @@ class App extends Component {
 
   handleStrategyChange(value) {
       this.setState({
-          strategySelected: value
+          strategySelected: value[0]
       })
   }
 
@@ -104,16 +104,16 @@ class App extends Component {
 
       const results = this.modelUnitObj.startModeling();
       console.log(results);
-      // this.setState({
-      //     isModelReady: true
-      // });
-      //
-      // store.dispatch(
-      //     saveModelResults({
-      //         results
-      //     })
-      // );
-      // this.forceUpdate();
+      this.setState({
+          isModelReady: true
+      });
+
+      store.dispatch(
+          saveModelResults({
+              results
+          })
+      );
+      this.forceUpdate();
   }
 
   render() {
@@ -162,7 +162,7 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    results: (state.results) ? state.results.toJS() : null,
+    results: (state.results) ? state.results.toJS()[0] : null,
     currentModelShot: state.currentModelShot
   };
 };

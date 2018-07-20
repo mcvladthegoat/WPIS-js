@@ -22,7 +22,7 @@ const rootReducer = (state = initialState, action) => {
       case ActionType.CHANGE_MODEL_TIME:
         return {
             ...state,
-            currentModelShot: state.results.toJS()[action.payload.strategySelected].states[action.payload.time * 10] || []
+            currentModelShot: state.results.toJS()[0][action.payload.strategySelected].states[action.payload.time * 10] || []
         };
 
     default:

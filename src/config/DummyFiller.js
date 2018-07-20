@@ -2,11 +2,11 @@ let workerIndex = 1, taskIndex = 1;
 
 const w = (level, jobId, name = '-') => { //initWorkersSheet
     workerIndex++;
-    return {workerId: workerIndex-1, level, jobId, name};
+    return { workerId: workerIndex-1, level, jobId, name };
 };
 
 const t = (time, jobId, name) => { //initTasksSheet
-    taskIndex++;  return {taskId: taskIndex - 1, time, jobId, name, status: false, report: {workerId: null, realTime: null}};
+    taskIndex++;  return { taskId: taskIndex - 1, time, jobId, name, status: false, report: { workerId: null, realTime: null }};
 };
 
 let workersSheet = [
