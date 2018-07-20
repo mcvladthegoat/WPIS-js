@@ -4,7 +4,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import logger from 'redux-logger';
 
 const composeEnhancers = composeWithDevTools({
-    name: 'MyApp', actionsBlacklist: ['REDUX_STORAGE_SAVE']
+    name: 'WPIS', actionsBlacklist: ['REDUX_STORAGE_SAVE']
 });
 
 

@@ -6,13 +6,10 @@ class StandartStrategy extends Strategy {
     constructor(...params) {
         super(...params);
         this.startCalc = this.startCalc.bind(this);
-        this.start = this.start.bind(this);
+        this.name = name;
         this.localResults = [];
     }
 
-    start() {
-        return super.iterateModelTime(this, this.startCalc);
-    }
 
     startCalc() {
         /*

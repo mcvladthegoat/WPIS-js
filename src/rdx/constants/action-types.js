@@ -1,14 +1,7 @@
 import keyMirror from 'key-mirror';
 
 export const ActionType = keyMirror({
-    ADD_TODO_ITEM: null,
-    UPDATE_TODO_ITEM: null,
-    DELETE_TODO_ITEM: null,
     PREPARE_ALL_DATA: null,
-    START_MODELING: null,
+    SAVE_MODEL_RESULTS: null,
+    CHANGE_MODEL_TIME: null,
 });
-// export const
-// ADD_TODO_ITEM    = "ADD_TODO_ITEM",
-// UPDATE_TODO_ITEM = "UPDATE_TODO_ITEM",
-// DELETE_TODO_ITEM = "DELETE_TODO_ITEM"
-// ;

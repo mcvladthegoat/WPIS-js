@@ -7,7 +7,7 @@ export class ModelUnit {
         this.startModeling = this.startModeling.bind(this);
         this.syncModeling = this.syncModeling.bind(this);
         this.strategiesInstances = [];
-        this.results;
+        this.showData = this.showData.bind(this);
     }
 
     static getStrategiesList() {
@@ -19,9 +19,9 @@ export class ModelUnit {
     }
 
     prepareAllData(workersSheet, tasksSheet, jobs) {
-        if (!this.validateData()) {
-            return;
-        }
+        // if (!this.validateData()) {
+        //     return;
+        // }
 
         this.strategiesInstances = availableStrategies.map((strategyItem, key) => {
            return {
@@ -31,16 +31,23 @@ export class ModelUnit {
         });
     }
 
+    showData() {
+        return this.strategiesInstances.map((s, k) => {
+            return {
+                name: s.name,
+                data: s.unit.showData()
+            }
+        });
+    }
+
     syncModeling(model) {}
 
     startModeling() {
-        let tempResults = this.strategiesInstances.map((strategyItem, k) => {
-            return strategyItem.unit.start();
-        });
-
-        console.log('final results', tempResults);
-
-        this.results = List.of(tempResults); //saved securely as immutable list
+        this.results = List.of(this.strategiesInstances.map(strategyItem =>
+            strategyItem.unit.start()
+        )[0]);
+        console.info('Final', this.results.toJS());
+        return this.results;
     }
 }
 

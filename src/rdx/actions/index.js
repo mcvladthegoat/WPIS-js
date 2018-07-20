@@ -1,17 +1,13 @@
 // src/js/actions/index.js
 import { ActionType } from "../constants/action-types";
 
-export const addToDoItem = ToDoItem => ({
-  type: ActionType.ADD_TODO_ITEM,
-  payload: ToDoItem,
+export const saveModelResults = results => ({
+    type:ActionType.SAVE_MODEL_RESULTS,
+    payload: results
 });
 
-export const updateToDoItem = ToDoItem => ({
-  type: ActionType.UPDATE_TODO_ITEM,
-  payload: ToDoItem,
+export const changeModelTime = data => ({
+    type:ActionType.CHANGE_MODEL_TIME,
+    payload: data
 });
 
-export const deleteToDoItem = ToDoItem => ({
-  type:ActionType. DELETE_TODO_ITEM,
-  payload: ToDoItem,
-});

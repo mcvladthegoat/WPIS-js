@@ -1,21 +1,31 @@
 import React, { Component, PropTypes } from 'react';
-import { Button, Label, Well, ListGroup } from 'react-bootstrap';
+import { Button, ToggleButton, ToggleButtonGroup, ButtonToolbar, Label, Well, ListGroup } from 'react-bootstrap';
 
-import logo from "./assets/img/hycabp.png";
-
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import store from "./rdx/index";
-import { addToDoItem, updateToDoItem, deleteToDoItem } from "./rdx/actions/index";
 
-import { ListItemComp } from "./components/ListComponent";
-import { SlideContainer } from "./components/SlideContainer";
+import Tooltip from 'rc-tooltip';
+import Slider from 'rc-slider';
+
+import store from "./rdx/index";
+import { saveModelResults, changeModelTime } from "./rdx/actions/index";
+
+import { WorkersTable } from "./components/WorkersTable";
+import { TasksTable } from "./components/TasksTable";
+
 
 import { ModelUnit } from "./config/ModelUnit";
+import projectData from "./config/DummyFiller";
 
 // Using CSS Modules mechanism
 import styles from "./assets/css/style.css";
+
+import 'rc-slider/assets/index.css';
+import 'rc-tooltip/assets/bootstrap.css';
+
+const createSliderWithTooltip = Slider.createSliderWithTooltip;
+const Range = createSliderWithTooltip(Slider.Range);
+const Handle = Slider.Handle;
 
 ////////////////////////////////////////////////////////////////////////////////
 class App extends Component {
@@ -23,79 +33,97 @@ class App extends Component {
   constructor(state, props) {
     super(state, props);
     this.state = {
-      bShow: false
+        isModelReady: false,
+        strategySelected: null,
+        strategies: [],
+        realTime: 0,
+        sliderValue: 0
     };
-    this.onDrag = this.onDrag.bind(this);
-    this.modelUnitObj = new ModelUnit();
-    console.warn(ModelUnit.getStrategiesList());
+
+    this.handle = this.handle.bind(this);
+    this.renderStrategyButtons = this.renderStrategyButtons.bind(this);
+    this.handleStrategyChange = this.handleStrategyChange.bind(this);
+    this.startCalc = this.startCalc.bind(this);
   }
 
-  showSettings() {
-    this.setState({bShow: !this.state.bShow });
-  }
-  
-  onDrag(e){
-      console.log(e);
+  componentDidMount() {
+      this.setState({
+          strategies: ModelUnit.getStrategiesList()
+      });
   }
 
-  onAdd() {
-    console.log("Going to add: " + this.refs.newToDoItem.value);
-    var newToDoItem = {};
-      newToDoItem.id = this.props.uniqueid;
-      newToDoItem.item = this.refs.newToDoItem.value;
-      newToDoItem.isChecked = false;
-      newToDoItem.fcbDelete = this.onDelete.bind(this);
-      newToDoItem.fcbUpdate = this.onUpdate.bind(this);
+  handle(props) {
+        const { value, dragging, index, ...restProps } = props;
+        const { strategySelected } = this.state;
 
-    store.dispatch(
-      addToDoItem({
-        id: newToDoItem.id,
-        item: newToDoItem.item,
-        isChecked: newToDoItem.isChecked,
-        fcbDelete: newToDoItem.fcbDelete,
-        fcbUpdate: newToDoItem.fcbUpdate,
+        if (this.state.sliderValue !== value) {
+            this.setState({
+                sliderValue: value
+            });
+            store.dispatch(
+                changeModelTime({
+                    time: value,
+                    strategySelected
+                })
+            );
+        }
+        return (
+            <Tooltip
+                prefixCls="rc-slider-tooltip"
+                overlay={value}
+                visible={dragging}
+                placement="top"
+                key={index}
+            >
+                <Handle value={value} {...restProps} />
+            </Tooltip>
+        );
+    };
+
+  handleStrategyChange(value) {
+      this.setState({
+          strategySelected: value
       })
-    );
-    this.forceUpdate();
   }
 
-  onUpdate(itemObject) {
-    console.log("Requesting updation of item " + JSON.stringify(itemObject) );
-
-    // I should check whether any element has changed or not...
-    store.dispatch(
-      updateToDoItem({
-        id: itemObject.id,
-        item: itemObject.item,
-        isChecked: itemObject.isChecked,
-        fcbDelete: itemObject.fcbDelete,
-        fcbUpdate: itemObject.fcbUpdate,
-      })
-    );
-    this.forceUpdate();
+  renderStrategyButtons() {
+      return this.state.strategies.map((strategy, key) =>
+          <ToggleButton key={key} value={key} bsStyle="primary">{strategy.name}</ToggleButton>
+      );
   }
 
-  onDelete(itemObject) {
-    console.log("In onDelete ... " + JSON.stringify(itemObject));
+  startCalc() {
+      if (this.state.strategySelected === null) {
+          return;
+      }
+      const { workersSheet, tasksSheet, jobs } = projectData;
+      this.modelUnitObj = new ModelUnit();
 
-    store.dispatch(
-      deleteToDoItem({
-        id: itemObject.id,
-        item: itemObject.item,
-        isChecked: itemObject.isChecked,
-        fcbDelete: itemObject.fcbDelete,
-        fcbUpdate: itemObject.fcbUpdate,
-      })
-    );
+      console.warn('Strategies available:', ModelUnit.getStrategiesList());
+      this.modelUnitObj.prepareAllData(workersSheet, tasksSheet, jobs);
+
+      const results = this.modelUnitObj.startModeling();
+      this.setState({
+          isModelReady: true
+      });
+
+      store.dispatch(
+          saveModelResults({
+              results
+          })
+      );
+      this.forceUpdate();
   }
 
   render() {
-    // console.log("In Render: " + JSON.stringify(this.props.ToDoData) );
 
-    var listItems = this.props.ToDoData.map(
-      (toDoItem) =>
-      <ListItemComp key={toDoItem.id} obj={toDoItem}></ListItemComp>
-    );
+    const { isModelReady, strategySelected } = this.state;
+    const { results } = this.props;
+
+    const maxSliderValue = (results) ? results[strategySelected].realTime : 0;
+    const tasks = (results) ? results[strategySelected].tasks : projectData.tasksSheet;
+
+    const wrapperStyle = { width: 'auto', margin: 10 };
 
     return (
       <div className={styles.bpApp}>
@@ -103,40 +131,39 @@ class App extends Component {
           <h1>Workgroup process imitation system </h1>
         </div>
         <Well>
-          <Label bsStyle="primary"> Items left : {this.props.ToDoData.length>this.props.done?this.props.ToDoData.length-this.props.done:0}</Label>{"  "}
-          <Label bsStyle="success"> Items done : {this.props.done}</Label>{"  "}
-          <Label bsStyle="info"> Total : {this.props.ToDoData.length}</Label>{"  "}
-          <Label bsStyle="danger"> Archieved Items :  {this.props.archived}</Label>{"  "}
-          <SlideContainer onDrag={this.onDrag}/>
+            {results && <div>
+                <h3><Label bsStyle="primary"> Total time : {results[strategySelected].realTime} </Label>
+                <Label bsStyle="success"> Current model state: {this.state.sliderValue} </Label></h3>
+            </div> }
+            <div style={wrapperStyle}>
+                <Slider min={0} max={maxSliderValue} step={0.1} defaultValue={0} handle={this.handle} disabled={!isModelReady}/>
+            </div>
+            <h4>
+                Available strategies:
+                <ToggleButtonGroup
+                    type="checkbox"
+                    value={strategySelected}
+                    onChange={this.handleStrategyChange}
+                >
+                    {this.renderStrategyButtons()}
+                </ToggleButtonGroup>
+                <Button onClick={this.startCalc}>Calculate</Button>
+            </h4>
         </Well>
-        <hr></hr>
-        <div>
-          <div className="input-group">
-            <input ref="newToDoItem" type="text" className="form-control" placeholder="To Do Item ..."></input>
-            <span className="input-group-btn">
-              <button className="btn btn-primary" type="button" onClick={this.onAdd.bind(this)}> Add </button>
-            </span>
-          </div>
-        </div>
-        <div>
-          <ListGroup className={styles.bpDiv}>
-            {listItems}
-          </ListGroup>
-        </div>
+        <hr />
+          <WorkersTable data={projectData.workersSheet} jobs={projectData.jobs} />
+          <TasksTable data={tasks} jobs={projectData.jobs} />
       </div>
     );
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 const mapStateToProps = state => {
   return {
-    uniqueid: state.uniqueid,
-    ToDoData: state.ToDoData,
-    done: state.done,
-    archived: state.archived,
+    results: (state.results) ? state.results.toJS() : null,
+    currentModelShot: state.currentModelShot
   };
 };
 export default App = connect(mapStateToProps)(App);
 
-////////////////////////////////////////////////////////////////////////////////
