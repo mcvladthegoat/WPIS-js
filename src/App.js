@@ -103,16 +103,17 @@ class App extends Component {
       this.modelUnitObj.prepareAllData(workersSheet, tasksSheet, jobs);
 
       const results = this.modelUnitObj.startModeling();
-      this.setState({
-          isModelReady: true
-      });
-
-      store.dispatch(
-          saveModelResults({
-              results
-          })
-      );
-      this.forceUpdate();
+      console.log(results);
+      // this.setState({
+      //     isModelReady: true
+      // });
+      //
+      // store.dispatch(
+      //     saveModelResults({
+      //         results
+      //     })
+      // );
+      // this.forceUpdate();
   }
 
   render() {

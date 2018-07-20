@@ -7,7 +7,6 @@ class StandartStrategy extends Strategy {
         super(...params);
         this.calc = this.calc.bind(this);
         this.name = name;
-        this.localResults = [];
     }
 
 

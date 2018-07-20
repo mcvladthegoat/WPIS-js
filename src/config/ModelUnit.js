@@ -45,7 +45,7 @@ export class ModelUnit {
     startModeling() {
         this.results = List.of(this.strategiesInstances.map(strategyItem =>
             strategyItem.unit.start()
-        )[0]);
+        ));
         console.info('Final', this.results.toJS());
         return this.results;
     }
