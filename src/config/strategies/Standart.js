@@ -5,24 +5,24 @@ const name = 'Standart';
 class StandartStrategy extends Strategy {
     constructor(...params) {
         super(...params);
-        this.startCalc = this.startCalc.bind(this);
+        this.calc = this.calc.bind(this);
         this.name = name;
         this.localResults = [];
     }
 
 
-    startCalc() {
+    calc() {
         /*
         * VARIANT 1
         * First free worker take task if jobIds are equal
         */
-        super.freeWorkers.map(fw => {
-            const task = super.tasks.find(t =>
+        this.freeWorkers.map(fw => {
+            const task = this.tasks.find(t =>
                 t.jobId == fw.jobId &&
-                !t.status && !super.workers.find(w => w.taskId == t.taskId)
+                !t.status && !this.workers.find(w => w.taskId == t.taskId)
             );
             if (task) {
-                super.workers.push({workerId: fw.workerId, taskId: task.taskId, time: 0});
+                this.workers.push({workerId: fw.workerId, taskId: task.taskId, time: 0});
             }
         });
     };
